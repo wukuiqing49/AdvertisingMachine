@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Advertising Machine</string>
+    <string name="server_running">Server Running</string>
+    <string name="default_server_address">0.0.0.0:8080</string>
+    <string name="long_press_open_settings">长按打开设置页</string>
+    <string name="settings_entry_todo">设置页待接入</string>
+</resources>
