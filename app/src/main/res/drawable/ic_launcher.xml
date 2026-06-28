@@ -1,11 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <solid android:color="@color/home_background" />
-    <corners android:radius="8dp" />
-    <padding
-        android:bottom="4dp"
-        android:left="4dp"
-        android:right="4dp"
-        android:top="4dp" />
-</shape>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- 圆角矩形背景 (包含渐变) -->
+    <path
+        android:pathData="M 24,8 h 60 a 16,16 0 0,1 16,16 v 60 a 16,16 0 0,1 -16,16 h -60 a 16,16 0 0,1 -16,-16 v -60 a 16,16 0 0,1 16,-16 z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:angle="315"
+                android:endColor="#0F2027"
+                android:startColor="#2C5364"
+                android:type="linear" />
+        </aapt:attr>
+    </path>
+
+    <!-- 前景：信号中心圆点 -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,28m-2,0a2,2 0 1,1 4,0a2,2 0 1,1 -4,0" />
+
+    <!-- 前景：信号第一圈波纹 -->
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M47,23A10,10 0 0,1 61,23" />
+
+    <!-- 前景：信号第二圈波纹 -->
+    <path
+        android:strokeColor="#00E5FF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:pathData="M40,18A20,20 0 0,1 68,18" />
+
+    <!-- 前景：显示器支架 -->
+    <path
+        android:fillColor="#CFD8DC"
+        android:pathData="M51,74h6v8h-6z" />
+    <!-- 前景：显示器底座 -->
+    <path
+        android:fillColor="#90A4AE"
+        android:pathData="M40,82h28a2,2 0 0,1 2,2v1a2,2 0 0,1 -2,2h-28a2,2 0 0,1 -2,-2v-1a2,2 0 0,1 2,-2z" />
+
+    <!-- 前景：显示器外框 -->
+    <path
+        android:fillColor="#261A233A"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3"
+        android:strokeLineJoin="round"
+        android:pathData="M24,36h60a4,4 0 0,1 4,4v30a4,4 0 0,1 -4,4h-60a4,4 0 0,1 -4,-4v-30a4,4 0 0,1 4,-4z" />
+
+    <!-- 前景：屏幕反射光 -->
+    <path
+        android:fillColor="#1AFFFFFF"
+        android:pathData="M25.5,37.5L50,37.5L25.5,62z" />
+
+    <!-- 前景：播放控制圆环 -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M54,55m-11,0a11,11 0 1,1 22,0a11,11 0 1,1 -22,0" />
+
+    <!-- 前景：播放三角 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M50,49.5l10,5.5l-10,5.5z" />
+
+</vector>

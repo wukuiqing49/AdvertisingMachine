@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广告机局域网多屏中控台</title>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --card-bg: rgba(20, 30, 55, 0.6);
+            --primary: #00e5ff;
+            --primary-hover: #00b0ff;
+            --text-color: #f2f4f7;
+            --text-muted: #94a3b8;
+            --border-color: rgba(0, 229, 255, 0.15);
+            --border-glow: rgba(0, 229, 255, 0.3);
+            --danger: #ff4081;
+            --success: #00e676;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 229, 255, 0.1) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(255, 64, 129, 0.05) 0px, transparent 50%);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            border: 1px solid var(--border-color);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--text-muted);
+        }
+
+        .status-dot.online {
+            background-color: var(--success);
+            box-shadow: 0 0 10px var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.offline {
+            background-color: var(--danger);
+            box-shadow: 0 0 10px var(--danger);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            flex-grow: 1;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            transition: border-color 0.3s;
+        }
+
+        .card:hover {
+            border-color: var(--border-glow);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+            padding-left: 10px;
+            margin-bottom: 4px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        input[type="text"], input[type="number"], select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-color);
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 8px rgba(0, 229, 255, 0.2);
+        }
+
+        .row-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 16px;
+            padding: 4px 0;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .radio-item input {
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+            color: #0b0f19;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, filter 0.2s, box-shadow 0.2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+        }
+
+        button:hover {
+            filter: brightness(1.1);
+            box-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button.btn-secondary {
+            background: rgba(30, 41, 59, 0.8);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        button.btn-secondary:hover {
+            background: rgba(51, 65, 85, 0.9);
+            border-color: var(--primary);
+            box-shadow: none;
+        }
+
+        button.btn-danger {
+            background: linear-gradient(135deg, var(--danger), #d81b60);
+            color: #ffffff;
+        }
+
+        button.btn-danger:hover {
+            box-shadow: 0 0 12px rgba(255, 64, 129, 0.4);
+        }
+
+        /* 预览区监视器 */
+        .monitor-wrapper {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #screenPreview {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: none;
+        }
+
+        .monitor-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .monitor-placeholder svg {
+            width: 48px;
+            height: 48px;
+            stroke: var(--text-muted);
+        }
+
+        /* 日志窗口 */
+        .log-box {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 13px;
+            height: 150px;
+            overflow-y: auto;
+            color: #a7f3d0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .log-item {
+            line-height: 1.4;
+            word-break: break-all;
+        }
+
+        .log-item.err {
+            color: var(--danger);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🖥️ 广告机局域网多屏中控台</h1>
+        <div class="status-badge">
+            <span id="statusDot" class="status-dot"></span>
+            <span id="statusText">正在检查连接...</span>
+        </div>
+    </header>
+
+    <div class="dashboard">
+        <!-- 左侧：操作卡片 -->
+        <div class="card">
+            <div>
+                <span class="card-title">网络与连接配置</span>
+            </div>
+            
+            <div class="row-group">
+                <div class="form-group">
+                    <label for="signageIp">广告机 IP 与端口</label>
+                    <input type="text" id="signageIp" placeholder="例如 192.168.5.15:8080" />
+                </div>
+                <div class="form-group">
+                    <label for="serverIp">电脑静态服务器 IP 与端口</label>
+                    <input type="text" id="serverIp" placeholder="例如 192.168.5.20:9000" />
+                </div>
+            </div>
+
+            <div>
+                <span class="card-title">窗口布局快捷键</span>
+            </div>
+            <div class="btn-grid">
+                <button onclick="applyLayout('full')">🚀 全屏主窗口</button>
+                <button onclick="applyLayout('pip')">📱 画中画窗口</button>
+                <button onclick="applyLayout('split')">📊 左右双分屏</button>
+                <button class="btn-danger" onclick="applyLayout('clear')">🗑️ 清空所有窗口</button>
+            </div>
+
+            <div>
+                <span class="card-title">多媒体节目投送</span>
+            </div>
+            <div class="row-group">
+                <div class="form-group">
+                    <label for="windowId">投放窗口 ID</label>
+                    <select id="windowId">
+                        <option value="win_main">win_main (主视口)</option>
+                        <option value="win_sub">win_sub (副视口)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>媒体类型</label>
+                    <div class="radio-group">
+                        <label class="radio-item"><input type="radio" name="mediaType" value="video" checked> 视频</label>
+                        <label class="radio-item"><input type="radio" name="mediaType" value="image"> 图片</label>
+                        <label class="radio-item"><input type="radio" name="mediaType" value="live"> 直播流</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="mediaUrl">多媒体文件名 或 完整URL</label>
+                <input type="text" id="mediaUrl" placeholder="输入文件名如 bunny.mp4 或是完整地址" />
+            </div>
+
+            <div class="btn-grid">
+                <button onclick="controlMedia('start')">▶️ 开始播放</button>
+                <button class="btn-secondary" onclick="controlMedia('stop')">⏹️ 停止播放</button>
+            </div>
+
+            <div>
+                <span class="card-title">字幕文字叠加</span>
+            </div>
+            <div class="form-group">
+                <label for="textContent">字幕内容</label>
+                <input type="text" id="textContent" placeholder="输入要在屏幕上显示的通知文字" />
+            </div>
+            <div class="btn-grid">
+                <button onclick="sendSubtitle()">💬 发送字幕</button>
+                <button class="btn-secondary" onclick="clearSubtitle()">🧹 清空字幕</button>
+            </div>
+        </div>
+
+        <!-- 右侧：画面预览与日志 -->
+        <div class="card" style="justify-content: space-between;">
+            <div>
+                <span class="card-title">广告机当前画面实时预览</span>
+            </div>
+
+            <div class="monitor-wrapper">
+                <div id="previewPlaceholder" class="monitor-placeholder">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                        <line x1="8" y1="21" x2="16" y2="21"></line>
+                        <line x1="12" y1="17" x2="12" y2="21"></line>
+                    </svg>
+                    <div>暂无画面<br><span style="font-size: 12px;">请确保网络正常并点击下方“刷新预览”</span></div>
+                </div>
+                <img id="screenPreview" alt="屏幕预览" />
+            </div>
+
+            <div style="display: flex; gap: 12px;">
+                <button style="flex-grow: 1;" onclick="refreshPreview()">🔄 刷新预览画面</button>
+                <button class="btn-secondary" onclick="pingDevice()">⚡ 手动检测状态</button>
+            </div>
+
+            <div>
+                <span class="card-title">系统操作日志</span>
+            </div>
+            <div id="logBox" class="log-box">
+                <div class="log-item">系统准备就绪。请输入 IP 建立连接。</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 记忆配置加载 ---
+        window.addEventListener('load', () => {
+            const signageIp = localStorage.getItem('signage_ip') || '';
+            const serverIp = localStorage.getItem('server_ip') || '';
+
+            if (signageIp) document.getElementById('signageIp').value = signageIp;
+            if (serverIp) document.getElementById('serverIp').value = serverIp;
+
+            if (signageIp) {
+                pingDevice();
+                // 开启 5 秒轮询检测
+                setInterval(pingDevice, 5000);
+            }
+        });
+
+        // 自动保存输入
+        document.getElementById('signageIp').addEventListener('input', (e) => {
+            localStorage.setItem('signage_ip', e.target.value.trim());
+        });
+        document.getElementById('serverIp').addEventListener('input', (e) => {
+            localStorage.setItem('server_ip', e.target.value.trim());
+        });
+
+        // 获取当前连接配置
+        function getConfigs() {
+            const signageIp = document.getElementById('signageIp').value.trim();
+            const serverIp = document.getElementById('serverIp').value.trim();
+            
+            if (!signageIp) {
+                addLog('错误: 请先填写广告机 IP 和端口！', true);
+                return null;
+            }
+            return { signageIp, serverIp };
+        }
+
+        // --- 系统日志打印 ---
+        function addLog(msg, isErr = false) {
+            const logBox = document.getElementById('logBox');
+            const time = new Date().toLocaleTimeString();
+            const item = document.createElement('div');
+            item.className = 'log-item' + (isErr ? ' err' : '');
+            item.innerText = `[${time}] ${msg}`;
+            logBox.appendChild(item);
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+
+        // --- 1. Ping 检测连接 ---
+        async function pingDevice() {
+            const configs = getConfigs();
+            if (!configs) return;
+
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+
+            try {
+                const response = await fetch(`http://${configs.signageIp}/api/ping`, {
+                    method: 'GET',
+                    mode: 'cors'
+                });
+                if (response.ok) {
+                    dot.className = 'status-dot online';
+                    text.innerText = '已连接广告机';
+                } else {
+                    throw new Error();
+                }
+            } catch (e) {
+                dot.className = 'status-dot offline';
+                text.innerText = '与广告机连接中断';
+            }
+        }
+
+        // --- 2. 窗口布局控制 ---
+        async function applyLayout(type) {
+            const configs = getConfigs();
+            if (!configs) return;
+
+            addLog(`正在应用窗口布局: ${type}...`);
+
+            try {
+                if (type === 'clear') {
+                    // 清空所有窗口
+                    const res = await sendPost(configs.signageIp, '/deletescreen', { displayId: 0, screenId: 'win_main' });
+                    await sendPost(configs.signageIp, '/deletescreen', { displayId: 0, screenId: 'win_sub' });
+                    addLog('清空窗口指令下发成功');
+                    return;
+                }
+
+                if (type === 'full') {
+                    // 全屏主窗口
+                    const res = await sendPost(configs.signageIp, '/setscreen', {
+                        displayId: 0,
+                        screenId: 'win_main',
+                        x: 0, y: 0, w: 1920, h: 1080,
+                        layer: 1,
+                        bgColor: '#000000'
+                    });
+                    addLog('全屏主窗口创建成功: win_main (0,0,1920,1080)');
+                } else if (type === 'pip') {
+                    // 画中画
+                    // 1. 底层大窗口
+                    await sendPost(configs.signageIp, '/setscreen', {
+                        displayId: 0,
+                        screenId: 'win_main',
+                        x: 0, y: 0, w: 1920, h: 1080,
+                        layer: 1,
+                        bgColor: '#121826'
+                    });
+                    // 2. 右上角叠放小窗口
+                    await sendPost(configs.signageIp, '/setscreen', {
+                        displayId: 0,
+                        screenId: 'win_sub',
+                        x: 1200, y: 80, w: 640, h: 480,
+                        layer: 10,
+                        bgColor: '#ff4081'
+                    });
+                    addLog('画中画布局创建成功: win_main(底层) + win_sub(右上角)');
+                } else if (type === 'split') {
+                    // 左右双分屏
+                    await sendPost(configs.signageIp, '/setscreen', {
+                        displayId: 0,
+                        screenId: 'win_main',
+                        x: 0, y: 0, w: 960, h: 1080,
+                        layer: 1,
+                        bgColor: '#1F2A45'
+                    });
+                    await sendPost(configs.signageIp, '/setscreen', {
+                        displayId: 0,
+                        screenId: 'win_sub',
+                        x: 960, y: 0, w: 960, h: 1080,
+                        layer: 1,
+                        bgColor: '#111827'
+                    });
+                    addLog('左右双分屏布局创建成功: win_main(左) + win_sub(右)');
+                }
+            } catch (err) {
+                addLog('布局应用失败: ' + err.message, true);
+            }
+        }
+
+        // --- 3. 多媒体投送 ---
+        async function controlMedia(action) {
+            const configs = getConfigs();
+            if (!configs) return;
+
+            const winId = document.getElementById('windowId').value;
+
+            if (action === 'stop') {
+                addLog(`正在停止视口 ${winId} 的媒体播放...`);
+                try {
+                    await sendPost(configs.signageIp, '/stopplay', { displayId: 0, screenId: winId });
+                    addLog(`停止播放指令成功`);
+                } catch (e) {
+                    addLog('停止播放失败: ' + e.message, true);
+                }
+                return;
+            }
+
+            const rawUrl = document.getElementById('mediaUrl').value.trim();
+            const mediaType = document.querySelector('input[name="mediaType"]:checked').value;
+
+            if (!rawUrl) {
+                addLog('错误: 请先输入文件名或 URL 地址！', true);
+                return;
+            }
+
+            // 智能 URL 转换规则
+            let finalUrl = rawUrl;
+            if (mediaType !== 'live' && !rawUrl.startsWith('http://') && !rawUrl.startsWith('https://') && !rawUrl.startsWith('/') && !rawUrl.startsWith('file://')) {
+                if (!configs.serverIp) {
+                    addLog('提示: 投放电脑本地文件需要填写 电脑静态服务器IP，已直接发送原始文件名。', true);
+                } else {
+                    finalUrl = `http://${configs.serverIp}/${rawUrl}`;
+                }
+            }
+
+            addLog(`正在在视口 ${winId} 投送[${mediaType}] URL: ${finalUrl}`);
+
+            try {
+                await sendPost(configs.signageIp, '/startplay', {
+                    displayId: 0,
+                    screenId: winId,
+                    url: finalUrl,
+                    type: mediaType,
+                    loop: true
+                });
+                addLog('投放播放指令成功！');
+            } catch (e) {
+                addLog('投放播放失败: ' + e.message, true);
+            }
+        }
+
+        // --- 4. 字幕控制 ---
+        async function sendSubtitle() {
+            const configs = getConfigs();
+            if (!configs) return;
+
+            const winId = document.getElementById('windowId').value;
+            const text = document.getElementById('textContent').value.trim();
+
+            if (!text) {
+                addLog('错误: 请先输入字幕内容！', true);
+                return;
+            }
+
+            addLog(`正在在视口 ${winId} 叠放字幕: "${text}"...`);
+
+            try {
+                await sendPost(configs.signageIp, '/addtext', {
+                    displayId: 0,
+                    screenId: winId,
+                    textId: 'text_' + Date.now().toString().slice(-4), // 随机产生短ID
+                    text: text,
+                    color: '#00E5FF',
+                    size: 28,
+                    bgColor: '#80000000'
+                });
+                addLog('字幕发送成功！');
+            } catch (e) {
+                addLog('字幕发送失败: ' + e.message, true);
+            }
+        }
+
+        async function clearSubtitle() {
+            const configs = getConfigs();
+            if (!configs) return;
+
+            const winId = document.getElementById('windowId').value;
+            addLog(`正在清空视口 ${winId} 的字幕...`);
+
+            try {
+                await sendPost(configs.signageIp, '/cleartext', {
+                    displayId: 0,
+                    screenId: winId
+                });
+                addLog('清空字幕成功！');
+            } catch (e) {
+                addLog('清空字幕失败: ' + e.message, true);
+            }
+        }
+
+        // --- 5. 刷新截图预览 ---
+        function refreshPreview() {
+            const configs = getConfigs();
+            if (!configs) return;
+
+            addLog('正在请求屏幕截图预览...');
+            const placeholder = document.getElementById('previewPlaceholder');
+            const img = document.getElementById('screenPreview');
+
+            // 破除浏览器缓存
+            const timestamp = Date.now();
+            const snapUrl = `http://${configs.signageIp}/api/snapshot?displayId=0&t=${timestamp}`;
+
+            img.onload = () => {
+                placeholder.style.display = 'none';
+                img.style.display = 'block';
+                addLog('屏幕预览刷新成功！');
+            };
+
+            img.onerror = () => {
+                placeholder.style.display = 'flex';
+                img.style.display = 'none';
+                addLog('获取屏幕预览失败，请检查网络或确认广告机是否处于活跃播放状态！', true);
+            };
+
+            img.src = snapUrl;
+        }
+
+        // --- 辅助 HTTP 发送工具 ---
+        async function sendPost(ip, path, body) {
+            const url = `http://${ip}/api${path}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                mode: 'cors',
+                body: JSON.stringify(body)
+            });
+
+            if (!response.ok) {
+                const errText = await response.text();
+                throw new Error(errText || `HTTP ${response.status}`);
+            }
+            return await response.json();
+        }
+    </script>
+</body>
+</html>

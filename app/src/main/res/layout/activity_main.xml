@@ -3,15 +3,28 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/home_background"
-    android:padding="@dimen/home_content_padding">
+    android:background="@color/home_background">
 
+    <!-- 逻辑视口容器，作为底层渲染层 -->
+    <com.wkq.advertisingmachine.view.LogicalViewportContainer
+        android:id="@+id/logicalContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- 顶层信息悬浮卡片 -->
     <LinearLayout
         android:id="@+id/serverInfoContainer"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#A0000000"
+        android:elevation="4dp"
         android:gravity="center"
         android:orientation="vertical"
+        android:padding="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,25 +35,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/home_primary_text"
-            android:textSize="@dimen/home_status_text_size"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/tvServerAddress"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/home_address_margin_top"
+            android:layout_marginTop="8dp"
             android:textColor="@color/home_secondary_text"
-            android:textSize="@dimen/home_address_text_size" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/tvHint"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/home_hint_margin_top"
+            android:layout_marginTop="8dp"
             android:text="@string/long_press_open_settings"
             android:textColor="@color/home_hint_text"
-            android:textSize="@dimen/home_hint_text_size" />
+            android:textSize="14sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+

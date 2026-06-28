@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -45,4 +46,26 @@ android {
 
 dependencies {
     implementation libs.application.architecture
+
+    // Ktor Server (CIO Engine)
+    implementation libs.ktor.server.core
+    implementation libs.ktor.server.cio
+    implementation libs.ktor.server.content.negotiation
+    implementation libs.ktor.serialization.json
+
+    // Jetpack Media3 (ExoPlayer)
+    implementation libs.media3.exoplayer
+    implementation libs.media3.exoplayer.rtsp
+    implementation libs.media3.ui
+
+    // Coil
+    implementation libs.coil
+    implementation libs.coil.gif
+
+    // DataStore Preferences
+    implementation libs.datastore.preferences
+
+    // Kotlinx Serialization
+    implementation libs.kotlinx.serialization.json
 }
+
